@@ -1,3 +1,4 @@
+import screens.CreateQuestionScreenGui;
 import screens.TitleScreenGui;
 
 import javax.swing.*;
@@ -9,7 +10,9 @@ public class App {
             @Override
             public void run() {
                 // display title screen
-                new TitleScreenGui().setVisible(true);
+//                new TitleScreenGui().setVisible(true);
+
+                new CreateQuestionScreenGui().setVisible(true);
             }
         });
     }
