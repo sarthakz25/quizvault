@@ -94,6 +94,33 @@ public class JDBC {
         return null;
     }
 
+    public static ArrayList<String> getCategories() {
+        ArrayList<String> categoryList = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(
+                    DB_URL, DB_USERNAME, DB_PASSWORD
+            );
+
+            Statement getCategoriesQuery = connection.createStatement();
+            ResultSet resultSet = getCategoriesQuery.executeQuery(
+                    "SELECT * FROM CATEGORY"
+            );
+
+            while (resultSet.next()) {
+                String categoryName = resultSet.getString("category_name");
+                categoryList.add(categoryName);
+            }
+
+            return categoryList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        null if could not find categories
+        return null;
+    }
+
     private static Category insertCategory(String category) {
         try {
             Connection connection = DriverManager.getConnection(

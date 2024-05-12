@@ -1,6 +1,7 @@
 package screens;
 
 import constants.CommonConstants;
+import database.JDBC;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,8 +47,9 @@ public class TitleScreenGui extends JFrame {
         add(chooseCategoryLabel);
 
 //        category dropdown
-        String[] categories = new String[]{"Math", "Programming", "History", "Geography"}; // temp categories list
-        categoriesMenu = new JComboBox(categories);
+//        String[] categories = new String[]{"Math", "Programming", "History", "Geography"}; // temp categories list
+        ArrayList<String> categoryList = JDBC.getCategories();
+        categoriesMenu = new JComboBox(categoryList.toArray());
         categoriesMenu.setForeground(CommonConstants.DARK_BLUE);
         categoriesMenu.setBounds(25, 120, 339, 35);
         add(categoriesMenu);
@@ -87,6 +89,20 @@ public class TitleScreenGui extends JFrame {
         createQuestionButton.setFont(new Font("Arial", Font.BOLD, 16));
         createQuestionButton.setBackground(CommonConstants.LIGHT_BLUE);
         createQuestionButton.setBounds(65, 420, 262, 35);
+        createQuestionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                create question screen gui
+                CreateQuestionScreenGui createQuestionScreenGui = new CreateQuestionScreenGui();
+                createQuestionScreenGui.setLocationRelativeTo(TitleScreenGui.this);
+
+//                dispose this screen
+                TitleScreenGui.this.dispose();
+
+//                display create question screen gui
+                createQuestionScreenGui.setVisible(true);
+            }
+        });
         add(createQuestionButton);
     }
 }

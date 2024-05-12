@@ -1,6 +1,7 @@
 package screens;
 
 import constants.CommonConstants;
+import database.JDBC;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,6 +78,39 @@ public class CreateQuestionScreenGui extends JFrame {
         submitButton.setFont(new Font("Arial", Font.BOLD, 16));
         submitButton.setBackground(CommonConstants.LIGHT_GREEN);
         submitButton.setBounds(150, 385, 210, 45);
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (validateInput()) {
+                    String question = questionTextArea.getText();
+                    String category = categoryTextField.getText();
+                    String[] answers = new String[answerTextFields.length];
+                    int correctIndex = 0;
+
+                    for (int i = 0; i < answerTextFields.length; i++) {
+                        answers[i] = answerTextFields[i].getText();
+                        if (answerRadioButtons[i].isSelected()) {
+                            correctIndex = i;
+                        }
+                    }
+
+//                    update the db
+                    if (JDBC.saveQuestionCategoryAndAnswersToDb(question, category, answers, correctIndex)) {
+//                        update successful
+                        JOptionPane.showMessageDialog(CreateQuestionScreenGui.this, "Question added successfully!");
+
+//                        reset fields
+                        resetFields();
+                    } else {
+//                        update failed
+                        JOptionPane.showMessageDialog(CreateQuestionScreenGui.this, "Failed to add question.");
+                    }
+                } else {
+//                    invalid input
+                    JOptionPane.showMessageDialog(CreateQuestionScreenGui.this, "Error: Invalid Input");
+                }
+            }
+        });
         add(submitButton);
 
 //        go back label
@@ -85,6 +119,20 @@ public class CreateQuestionScreenGui extends JFrame {
         goBackLabel.setForeground(CommonConstants.LIGHT_RED);
         goBackLabel.setBounds(45, 385, 100, 45);
         goBackLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        goBackLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+//                display title screen
+                TitleScreenGui titleScreenGui = new TitleScreenGui();
+                titleScreenGui.setLocationRelativeTo(CreateQuestionScreenGui.this);
+
+//                dispose this screen
+                CreateQuestionScreenGui.this.dispose();
+
+//                make title screen visible
+                titleScreenGui.setVisible(true);
+            }
+        });
         add(goBackLabel);
     }
 
@@ -114,6 +162,33 @@ public class CreateQuestionScreenGui extends JFrame {
             answerTextFields[i].setBounds(470, 90 + (i * verticalSpacing), 310, 40);
             answerTextFields[i].setForeground(CommonConstants.DARK_BLUE);
             add(answerTextFields[i]);
+        }
+
+//        to give first radio button a default value
+        answerRadioButtons[0].setSelected(true);
+
+    }
+
+    //    true if valid, else false
+    private boolean validateInput() {
+//        to make sure question field is not empty
+        if (questionTextArea.getText().replaceAll(" ", "").isEmpty()) return false;
+
+//        to make sure category field is not empty
+        if (categoryTextField.getText().replaceAll(" ", "").isEmpty()) return false;
+
+//        to make sure all answer fields are not empty
+        for (int i = 0; i < answerTextFields.length; i++) {
+            if (answerTextFields[i].getText().replaceAll(" ", "").isEmpty()) return false;
+        }
+        return true;
+    }
+
+    private void resetFields() {
+        questionTextArea.setText("");
+        categoryTextField.setText("");
+        for (int i = 0; i < answerTextFields.length; i++) {
+            answerTextFields[i].setText("");
         }
     }
 }

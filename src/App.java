@@ -10,9 +10,9 @@ public class App {
             @Override
             public void run() {
                 // display title screen
-//                new TitleScreenGui().setVisible(true);
+                new TitleScreenGui().setVisible(true);
 
-                new CreateQuestionScreenGui().setVisible(true);
+//                new CreateQuestionScreenGui().setVisible(true);
             }
         });
     }
