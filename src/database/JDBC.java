@@ -36,6 +36,38 @@ public class JDBC {
     }
 
     //    question methods
+    public static ArrayList<Question> getQuestions(Category category) {
+        ArrayList<Question> questions = new ArrayList<>();
+        try {
+            Connection connection = DriverManager.getConnection(
+                    DB_URL, DB_USERNAME, DB_PASSWORD
+            );
+
+//            query to retrieve all questions of a category in random order
+            PreparedStatement getQuestionsQuery = connection.prepareStatement(
+                    "SELECT * FROM QUESTION JOIN CATEGORY " +
+                            "ON QUESTION.CATEGORY_ID = CATEGORY.CATEGORY_ID " +
+                            "WHERE CATEGORY.CATEGORY_NAME = ? ORDER BY RAND()"
+            );
+            getQuestionsQuery.setString(1, category.getCategoryName());
+
+            ResultSet resultSet = getQuestionsQuery.executeQuery();
+            while (resultSet.next()) {
+                int questionId = resultSet.getInt("question_id");
+                int categoryId = resultSet.getInt("category_id");
+                String question = resultSet.getString("question_text");
+                questions.add(new Question(questionId, categoryId, question));
+            }
+
+            return questions;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        could not find questions in db
+        return null;
+    }
+
     private static Question insertQuestion(Category category, String questionText) {
         try {
             Connection connection = DriverManager.getConnection(
@@ -149,7 +181,41 @@ public class JDBC {
         return null;
     }
 
-    //    answer methods, if true then successfully inserted, else false
+    //    answer methods
+    public static ArrayList<Answer> getAnswers(Question question) {
+        ArrayList<Answer> answers = new ArrayList<>();
+        try {
+            Connection connection = DriverManager.getConnection(
+                    DB_URL, DB_USERNAME, DB_PASSWORD
+            );
+
+//            query to retrieve all answers of a category in random order
+            PreparedStatement getAnswersQuery = connection.prepareStatement(
+                    "SELECT * FROM QUESTION JOIN ANSWER " +
+                            "ON QUESTION.QUESTION_ID = ANSWER.QUESTION_ID " +
+                            "WHERE QUESTION.QUESTION_ID = ? ORDER BY RAND()"
+            );
+            getAnswersQuery.setInt(1, question.getQuestionId());
+
+            ResultSet resultSet = getAnswersQuery.executeQuery();
+            while (resultSet.next()) {
+                int answerId = resultSet.getInt("answer_id");
+                String answerText = resultSet.getString("answer_text");
+                boolean isCorrect = resultSet.getBoolean("is_correct");
+                Answer answer = new Answer(answerId, question.getQuestionId(), answerText, isCorrect);
+                answers.add(answer);
+            }
+
+            return answers;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        could not find questions in db
+        return null;
+    }
+
+    //    if true then successfully inserted, else false
     private static boolean insertAnswers(Question question, String[] answers, int correctIndex) {
         try {
             Connection connection = DriverManager.getConnection(

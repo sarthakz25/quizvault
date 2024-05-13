@@ -1,4 +1,6 @@
+import database.Category;
 import screens.CreateQuestionScreenGui;
+import screens.QuizScreenGui;
 import screens.TitleScreenGui;
 
 import javax.swing.*;
@@ -10,9 +12,12 @@ public class App {
             @Override
             public void run() {
                 // display title screen
-                new TitleScreenGui().setVisible(true);
+//                new TitleScreenGui().setVisible(true);
 
 //                new CreateQuestionScreenGui().setVisible(true);
+
+                new QuizScreenGui(new Category(1, "Java"), 10)
+                        .setVisible(true);
             }
         });
     }
