@@ -142,14 +142,6 @@ public class QuizScreenGui extends JFrame implements ActionListener {
             }
         });
         add(nextButton);
-
-//        prev button
-//        JButton prevButton = new JButton("←");
-//        prevButton.setFont(new Font("Arial", Font.BOLD, 14));
-//        prevButton.setBackground(Color.darkGray);
-//        prevButton.setForeground(CommonConstants.LIGHT_BLUE);
-//        prevButton.setBounds(255, 473, 50, 35);
-//        add(prevButton);
     }
 
     private void addAnswerComponents() {
@@ -197,6 +189,16 @@ public class QuizScreenGui extends JFrame implements ActionListener {
 //                    display final result
                 JOptionPane.showMessageDialog(QuizScreenGui.this,
                         "Your final score = " + score + "/" + numOfQuestions);
+
+//                load title screen
+                TitleScreenGui titleScreenGui = new TitleScreenGui();
+                titleScreenGui.setLocationRelativeTo(QuizScreenGui.this);
+
+//                dispose this screen
+                QuizScreenGui.this.dispose();
+
+//                display title screen
+                titleScreenGui.setVisible(true);
             } else {
 //                    make next button visible
                 nextButton.setVisible(true);
