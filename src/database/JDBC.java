@@ -99,7 +99,7 @@ public class JDBC {
     }
 
     //    category methods
-    private static Category getCategory(String category) {
+    public static Category getCategory(String category) {
         try {
             Connection connection = DriverManager.getConnection(
                     DB_URL, DB_USERNAME, DB_PASSWORD

@@ -5,7 +5,7 @@ public class Answer {
     private int answerId;
     private int questionId;
     private String answerText;
-    private Boolean isCorrect;
+    private boolean isCorrect;
 
     public int getAnswerId() {
         return answerId;
@@ -19,7 +19,7 @@ public class Answer {
         return answerText;
     }
 
-    public Boolean getCorrect() {
+    public boolean isCorrect() {
         return isCorrect;
     }
 

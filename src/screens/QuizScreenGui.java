@@ -12,10 +12,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class QuizScreenGui extends JFrame {
+public class QuizScreenGui extends JFrame implements ActionListener {
     private JLabel scoreLabel;
     private JTextArea questionTextArea;
     private JButton[] answerButtons;
+    private JButton nextButton;
 
     //    current quiz category
     private Category category;
@@ -92,23 +93,62 @@ public class QuizScreenGui extends JFrame {
         returnToTitleButton.setFont(new Font("Arial", Font.BOLD, 14));
         returnToTitleButton.setBackground(Color.lightGray);
         returnToTitleButton.setBounds(20, 473, 90, 35);
+        returnToTitleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                load title screen
+                TitleScreenGui titleScreenGui = new TitleScreenGui();
+                titleScreenGui.setLocationRelativeTo(QuizScreenGui.this);
+
+//                dispose this screen
+                QuizScreenGui.this.dispose();
+
+//                display title screen
+                titleScreenGui.setVisible(true);
+            }
+        });
         add(returnToTitleButton);
 
 //        next button
-        JButton nextButton = new JButton("Next");
+        nextButton = new JButton("→");
         nextButton.setFont(new Font("Arial", Font.BOLD, 14));
         nextButton.setBackground(Color.darkGray);
         nextButton.setForeground(CommonConstants.LIGHT_BLUE);
-        nextButton.setBounds(295, 473, 75, 35);
+        nextButton.setBounds(319, 473, 50, 35);
         nextButton.setVisible(false);
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                hide next button
+                nextButton.setVisible(false);
+
+//                reset first choice flag
+                firstChoiceMade = false;
+
+//                update current question to next
+                currentQuestion = questions.get(++currentQuestionNumber);
+                questionTextArea.setText(currentQuestion.getQuestionText());
+
+//                reset, update the answer buttons
+                for (int i = 0; i < currentQuestion.getAnswers().size(); i++) {
+                    Answer answer = currentQuestion.getAnswers().get(i);
+
+//                    reset bg color for button
+                    answerButtons[i].setBackground(Color.white);
+
+//                    update ans text
+                    answerButtons[i].setText("<html><div style='text-align: left;'>" + answer.getAnswerText() + "</div></html>");
+                }
+            }
+        });
         add(nextButton);
 
 //        prev button
-//        JButton prevButton = new JButton("Prev");
+//        JButton prevButton = new JButton("←");
 //        prevButton.setFont(new Font("Arial", Font.BOLD, 14));
 //        prevButton.setBackground(Color.darkGray);
 //        prevButton.setForeground(CommonConstants.LIGHT_BLUE);
-//        prevButton.setBounds(210, 473, 75, 35);
+//        prevButton.setBounds(255, 473, 50, 35);
 //        add(prevButton);
     }
 
@@ -124,8 +164,48 @@ public class QuizScreenGui extends JFrame {
             answerButton.setForeground(CommonConstants.DARK_BLUE);
             answerButton.setBounds(20, 135 + (i * verticalSpacing), 350, 75);
             answerButton.setFont(new Font("Arial", Font.BOLD, 14));
+            answerButton.addActionListener(this);
             answerButtons[i] = answerButton;
             add(answerButtons[i]);
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JButton answerButton = (JButton) e.getSource();
+
+//        find correct answer
+        Answer correctAnswer = null;
+        for (Answer answer : currentQuestion.getAnswers()) {
+            if (answer.isCorrect()) {
+                correctAnswer = answer;
+                break;
+            }
+        }
+
+        if (answerButton.getText().equals("<html><div style='text-align: left;'>" + correctAnswer.getAnswerText() + "</div></html>")) {
+//                user chose right ans, change button to green
+            answerButton.setBackground(CommonConstants.LIGHT_GREEN);
+
+//                increase score only if it was the first choice
+            if (!firstChoiceMade) {
+                scoreLabel.setText("Score: " + (++score) + "/" + numOfQuestions);
+            }
+
+//                check for last question
+            if (currentQuestionNumber == numOfQuestions - 1) {
+//                    display final result
+                JOptionPane.showMessageDialog(QuizScreenGui.this,
+                        "Your final score = " + score + "/" + numOfQuestions);
+            } else {
+//                    make next button visible
+                nextButton.setVisible(true);
+            }
+        } else {
+//                make button red to indicate incorrect choice
+            answerButton.setBackground(CommonConstants.LIGHT_RED);
+        }
+
+        firstChoiceMade = true;
     }
 }

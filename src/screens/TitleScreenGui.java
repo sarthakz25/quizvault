@@ -1,6 +1,7 @@
 package screens;
 
 import constants.CommonConstants;
+import database.Category;
 import database.JDBC;
 
 import javax.swing.*;
@@ -75,6 +76,30 @@ public class TitleScreenGui extends JFrame {
         startButton.setFont(new Font("Arial", Font.BOLD, 16));
         startButton.setBackground(CommonConstants.LIGHT_GREEN);
         startButton.setBounds(65, 290, 262, 35);
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (validateInput()) {
+//                    retrieve category
+                    Category category = JDBC.getCategory(categoriesMenu.getSelectedItem().toString());
+
+//                    invalid category
+                    if (category == null) return;
+
+                    int numOfQuestions = Integer.parseInt(numOfQuestionsTextField.getText());
+
+//                    load quiz screen
+                    QuizScreenGui quizScreenGui = new QuizScreenGui(category, numOfQuestions);
+                    quizScreenGui.setLocationRelativeTo(TitleScreenGui.this);
+
+//                    dispose this screen
+                    TitleScreenGui.this.dispose();
+
+//                    display quiz screen
+                    quizScreenGui.setVisible(true);
+                }
+            }
+        });
         add(startButton);
 
 //        exit button
@@ -82,6 +107,13 @@ public class TitleScreenGui extends JFrame {
         exitButton.setFont(new Font("Arial", Font.BOLD, 16));
         exitButton.setBackground(CommonConstants.LIGHT_RED);
         exitButton.setBounds(65, 350, 262, 35);
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                dispose this screen
+                TitleScreenGui.this.dispose();
+            }
+        });
         add(exitButton);
 
 //        create a question button
@@ -104,5 +136,16 @@ public class TitleScreenGui extends JFrame {
             }
         });
         add(createQuestionButton);
+    }
+
+    //    true if input valid, else false
+    private boolean validateInput() {
+//        num of questions field must not be empty
+        if (numOfQuestionsTextField.getText().replaceAll(" ", "").length() <= 0) return false;
+
+//        no category chosen
+        if (categoriesMenu.getSelectedItem() == null) return false;
+
+        return true;
     }
 }
